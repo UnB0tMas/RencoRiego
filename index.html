@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Rol del Segundo Riego de Toreocc Cucho</title>
+
+  <!-- Librería html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: #4CAF50;
+    }
+    label {
+      display: block;
+      font-size: 1em;
+      margin-bottom: 5px;
+    }
+    input[type="datetime-local"] {
+      padding: 10px;
+      width: 100%;
+      max-width: 400px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    .boton {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    .boton:hover {
+      background-color: #45a049;
+    }
+    #tablaRiego {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.9em;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+      display: block;
+      white-space: nowrap;
+    }
+    #tablaRiego th, #tablaRiego td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    #tablaRiego th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+    }
+    .celda-editable {
+      width: 100%;
+      border: none;
+      background-color: transparent;
+      text-align: center;
+      font-size: 1em;
+      color: #333;
+    }
+    .celda-editable:focus {
+      outline: none;
+      background-color: #e8f5e9;
+      border-radius: 3px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.4em;
+      }
+      .boton {
+        width: 100%;
+        padding: 12px;
+        font-size: 0.9em;
+      }
+      input[type="datetime-local"] {
+        width: 100%;
+      }
+      #tablaRiego {
+        font-size: 0.85em;
+        overflow-x: auto;
+      }
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.2em;
+      }
+      .boton {
+        padding: 10px;
+      }
+      input[type="datetime-local"] {
+        padding: 8px;
+        font-size: 0.85em;
+      }
+      #tablaRiego {
+        font-size: 0.75em;
+      }
+      th, td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Rol de Riego de Toreocc Cucho</h1>
+
+    <!-- Selección inicial de hora de inicio del riego -->
+    <div>
+      <label for="horaInicio">Hora y día de inicio del riego:</label>
+      <input type="datetime-local" id="horaInicio" />
+      <button class="boton" onclick="establecerInicioRiego()">Establecer inicio</button>
+    </div>
+
+    <!-- Tabla de riego -->
+    <div id="seccionDescarga">
+      <div style="overflow-x: auto;">
+        <table id="tablaRiego">
+          <thead>
+            <tr>
+              <th>NOMBRE</th>
+              <th>HORAS</th>
+              <th>HORA Y DÍA DE RIEGO (INICIO)</th>
+              <th>HORA Y DÍA DE RIEGO (FIN)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Botón para descargar PDF -->
+    <button class="boton" onclick="descargarPDF()">Descargar PDF</button>
+  </div>
+
+  <script>
+    const datosBase = [
+      ["Marleni", 8],
+      ["Lalo", 12],
+      ["Celia Villaverde", 4],
+      ["Berta", 4],
+      ["Mario", 8],
+      ["Luzma", 8],
+      ["Hermelinda", 4],
+      ["Aguedo", 28],
+      ["Walter", 8],
+      ["Lucha", 4],
+      ["Rita", 12],
+      ["Custodio", 8]
+    ];
+
+    let horaInicioGlobal = null;
+
+    function cargarDatos() {
+      return datosBase;
+    }
+
+    function formatearFechaConDia(fecha) {
+      const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+      const opcionesHora = { hour: "2-digit", minute: "2-digit", hour12: true };
+      const opcionesFecha = { day: "2-digit", month: "2-digit", year: "numeric" };
+      const diaSemana = dias[fecha.getDay()];
+      const hora = fecha.toLocaleTimeString("es-PE", opcionesHora);
+      const fechaFormateada = fecha.toLocaleDateString("es-PE", opcionesFecha);
+      return `${hora} ${diaSemana} ${fechaFormateada}`;
+    }
+
+    function renderizarTabla() {
+      const tbody = document.querySelector("#tablaRiego tbody");
+      tbody.innerHTML = "";
+      const datos = cargarDatos();
+
+      let inicioActual = horaInicioGlobal;
+
+      datos.forEach((fila) => {
+        const tr = document.createElement("tr");
+
+        // Nombre
+        const tdNombre = document.createElement("td");
+        tdNombre.textContent = fila[0];
+        tr.appendChild(tdNombre);
+
+        // Horas
+        const tdHoras = document.createElement("td");
+        const inputHoras = document.createElement("input");
+        inputHoras.type = "number";
+        inputHoras.className = "celda-editable";
+        inputHoras.value = fila[1];
+        inputHoras.min = 1;
+        inputHoras.addEventListener("change", (e) => {
+          fila[1] = parseInt(e.target.value, 10) || 1;
+          actualizarTiempos();
+        });
+        tdHoras.appendChild(inputHoras);
+        tr.appendChild(tdHoras);
+
+        // Hora inicio
+        const tdInicio = document.createElement("td");
+        const inputInicio = document.createElement("input");
+        inputInicio.type = "text";
+        inputInicio.className = "celda-editable";
+        inputInicio.value = inicioActual ? formatearFechaConDia(inicioActual) : "";
+        inputInicio.readOnly = true;
+        tdInicio.appendChild(inputInicio);
+        tr.appendChild(tdInicio);
+
+        // Hora fin
+        const tdFin = document.createElement("td");
+        const inputFin = document.createElement("input");
+        inputFin.type = "text";
+        inputFin.className = "celda-editable";
+        inputFin.readOnly = true;
+        tdFin.appendChild(inputFin);
+        tr.appendChild(tdFin);
+
+        tbody.appendChild(tr);
+
+        if (inicioActual) {
+          const finActual = new Date(inicioActual);
+          finActual.setHours(finActual.getHours() + fila[1]);
+          inputFin.value = formatearFechaConDia(finActual);
+          inicioActual = new Date(finActual);
+        }
+      });
+    }
+
+    function establecerInicioRiego() {
+      const inputInicio = document.getElementById("horaInicio");
+      const horaInicio = new Date(inputInicio.value);
+
+      if (isNaN(horaInicio.getTime())) {
+        alert("Por favor, ingresa una fecha y hora válida.");
+        return;
+      }
+
+      horaInicioGlobal = horaInicio;
+      renderizarTabla();
+    }
+
+    function actualizarTiempos() {
+      renderizarTabla();
+    }
+
+    function descargarPDF() {
+      const seccionOriginal = document.getElementById("seccionDescarga");
+      const seccionClonada = seccionOriginal.cloneNode(true);
+
+      const opciones = {
+        margin: 0.5,
+        filename: 'RolSegundoRiego.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: {
+          unit: 'in',
+          format: 'letter',
+          orientation: 'landscape'
+        }
+      };
+
+      html2pdf().set(opciones).from(seccionClonada).save();
+    }
+
+    window.onload = function () {
+      renderizarTabla();
+    };
+  </script>
+</body>
+</html>
