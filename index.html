@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rol del Segundo Riego de Toreocc Cucho</title>
+  <title>Rol de Riego</title>
 
-  <!-- Librería html2pdf.js -->
+  <!-- Librerías externas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
+    /* Estilo general */
     * {
       margin: 0;
       padding: 0;
@@ -99,21 +101,26 @@
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+    @media (min-width: 769px) {
+      #tablaRiego th:nth-child(2), #tablaRiego td:nth-child(2) {
+        min-width: 30px;
+      }
+      #tablaRiego th:nth-child(3), #tablaRiego td:nth-child(3) {
+        min-width: 150px;
+      }
+      #tablaRiego th:nth-child(4), #tablaRiego td:nth-child(4) {
+        min-width: 250px;
+      }
+    }
     @media (max-width: 768px) {
-      h1 {
-        font-size: 1.4em;
+      #tablaRiego th:nth-child(2), #tablaRiego td:nth-child(2) {
+        min-width: 20px;
       }
-      .boton {
-        width: 100%;
-        padding: 12px;
-        font-size: 0.9em;
+      #tablaRiego th:nth-child(3), #tablaRiego td:nth-child(3) {
+        min-width: 120px;
       }
-      input[type="datetime-local"] {
-        width: 100%;
-      }
-      #tablaRiego {
-        font-size: 0.85em;
-        overflow-x: auto;
+      #tablaRiego th:nth-child(4), #tablaRiego td:nth-child(4) {
+        min-width: 200px;
       }
     }
     @media (max-width: 480px) {
@@ -139,16 +146,14 @@
 <body>
 
   <div class="container">
-    <h1>Rol de Riego de Toreocc Cucho</h1>
+    <h1 id="tituloRiego">Rol de Riego de Toreocc Cucho</h1>
 
-    <!-- Selección inicial de hora de inicio del riego -->
     <div>
       <label for="horaInicio">Hora y día de inicio del riego:</label>
       <input type="datetime-local" id="horaInicio" />
       <button class="boton" onclick="establecerInicioRiego()">Establecer inicio</button>
     </div>
 
-    <!-- Tabla de riego -->
     <div id="seccionDescarga">
       <div style="overflow-x: auto;">
         <table id="tablaRiego">
@@ -165,8 +170,7 @@
       </div>
     </div>
 
-    <!-- Botón para descargar PDF -->
-    <button class="boton" onclick="descargarPDF()">Descargar PDF</button>
+    <button class="boton" onclick="mostrarModalDescarga()">Descargar PDF (Horizontal)</button>
   </div>
 
   <script>
@@ -186,6 +190,7 @@
     ];
 
     let horaInicioGlobal = null;
+    let tipoRiego = "Segundo";
 
     function cargarDatos() {
       return datosBase;
@@ -211,12 +216,10 @@
       datos.forEach((fila) => {
         const tr = document.createElement("tr");
 
-        // Nombre
         const tdNombre = document.createElement("td");
         tdNombre.textContent = fila[0];
         tr.appendChild(tdNombre);
 
-        // Horas
         const tdHoras = document.createElement("td");
         const inputHoras = document.createElement("input");
         inputHoras.type = "number";
@@ -230,7 +233,6 @@
         tdHoras.appendChild(inputHoras);
         tr.appendChild(tdHoras);
 
-        // Hora inicio
         const tdInicio = document.createElement("td");
         const inputInicio = document.createElement("input");
         inputInicio.type = "text";
@@ -240,7 +242,6 @@
         tdInicio.appendChild(inputInicio);
         tr.appendChild(tdInicio);
 
-        // Hora fin
         const tdFin = document.createElement("td");
         const inputFin = document.createElement("input");
         inputFin.type = "text";
@@ -273,28 +274,62 @@
       renderizarTabla();
     }
 
+    function mostrarModalDescarga() {
+      Swal.fire({
+        title: 'Selecciona el tipo de riego',
+        input: 'select',
+        inputOptions: {
+          'Primer': 'Primer Riego',
+          'Segundo': 'Segundo Riego'
+        },
+        inputPlaceholder: 'Selecciona una opción',
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          tipoRiego = result.value;
+          document.getElementById("tituloRiego").textContent = `Rol del ${tipoRiego} Riego de Toreocc Cucho`;
+          descargarPDF();
+        }
+      });
+    }
+
     function actualizarTiempos() {
       renderizarTabla();
     }
 
     function descargarPDF() {
-      const seccionOriginal = document.getElementById("seccionDescarga");
-      const seccionClonada = seccionOriginal.cloneNode(true);
+  const seccionOriginal = document.getElementById("seccionDescarga");
+  const seccionClonada = seccionOriginal.cloneNode(true);
 
-      const opciones = {
-        margin: 0.5,
-        filename: 'RolSegundoRiego.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: {
-          unit: 'in',
-          format: 'letter',
-          orientation: 'landscape'
-        }
-      };
+  // Crear un contenedor para el título dinámico
+  const tituloDinamico = document.createElement("h2");
+  tituloDinamico.style.textAlign = "center";
+  tituloDinamico.style.marginBottom = "20px";
+  tituloDinamico.textContent = `Rol del ${tipoRiego} Riego de Toreocc Cucho`;
 
-      html2pdf().set(opciones).from(seccionClonada).save();
-    }
+  // Añadir el título dinámico al inicio del contenido clonada
+  const contenedor = document.createElement("div");
+  contenedor.appendChild(tituloDinamico);
+  contenedor.appendChild(seccionClonada);
+
+  const opciones = {
+    margin: 0.5,
+    filename: `Rol del ${tipoRiego} Riego.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: {
+      unit: "in",
+      format: "letter",
+      orientation: "landscape",
+    },
+  };
+
+  // Generar el PDF desde el contenedor con título incluido
+  html2pdf().set(opciones).from(contenedor).save();
+}
+
 
     window.onload = function () {
       renderizarTabla();
