@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rol de Riego</title>
+  <title>Rol del Segundo Riego de Toreocc Cucho</title>
 
   <!-- Librerías externas -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
@@ -146,7 +146,7 @@
 <body>
 
   <div class="container">
-    <h1 id="tituloRiego">Rol de Riego de Toreocc Cucho</h1>
+    <h1 id="tituloRiego">Rol de Riego de Torreyoq Kucho</h1>
 
     <div>
       <label for="horaInicio">Hora y día de inicio del riego:</label>
@@ -170,7 +170,7 @@
       </div>
     </div>
 
-    <button class="boton" onclick="mostrarModalDescarga()">Descargar PDF (Horizontal)</button>
+    <button class="boton" onclick="mostrarModalDescarga()">Descargar Imagen (PNG)</button>
   </div>
 
   <script>
@@ -225,9 +225,9 @@
         inputHoras.type = "number";
         inputHoras.className = "celda-editable";
         inputHoras.value = fila[1];
-        inputHoras.min = 1;
+        inputHoras.min = 0;
         inputHoras.addEventListener("change", (e) => {
-          fila[1] = parseInt(e.target.value, 10) || 1;
+          fila[1] = parseInt(e.target.value, 10) || 0;
           actualizarTiempos();
         });
         tdHoras.appendChild(inputHoras);
@@ -237,7 +237,7 @@
         const inputInicio = document.createElement("input");
         inputInicio.type = "text";
         inputInicio.className = "celda-editable";
-        inputInicio.value = inicioActual ? formatearFechaConDia(inicioActual) : "";
+        inputInicio.value = fila[1] > 0 && inicioActual ? formatearFechaConDia(inicioActual) : "-- ---- ---";
         inputInicio.readOnly = true;
         tdInicio.appendChild(inputInicio);
         tr.appendChild(tdInicio);
@@ -246,17 +246,15 @@
         const inputFin = document.createElement("input");
         inputFin.type = "text";
         inputFin.className = "celda-editable";
+        inputFin.value = fila[1] > 0 && inicioActual ? formatearFechaConDia(new Date(inicioActual.getTime() + fila[1] * 60 * 60 * 1000)) : "-- ---- ---";
         inputFin.readOnly = true;
         tdFin.appendChild(inputFin);
         tr.appendChild(tdFin);
 
         tbody.appendChild(tr);
 
-        if (inicioActual) {
-          const finActual = new Date(inicioActual);
-          finActual.setHours(finActual.getHours() + fila[1]);
-          inputFin.value = formatearFechaConDia(finActual);
-          inicioActual = new Date(finActual);
+        if (fila[1] > 0 && inicioActual) {
+          inicioActual = new Date(inicioActual.getTime() + fila[1] * 60 * 60 * 1000);
         }
       });
     }
@@ -289,8 +287,8 @@
       }).then((result) => {
         if (result.isConfirmed && result.value) {
           tipoRiego = result.value;
-          document.getElementById("tituloRiego").textContent = `Rol del ${tipoRiego} Riego de Toreocc Cucho`;
-          descargarPDF();
+          document.getElementById("tituloRiego").textContent = `Rol del ${tipoRiego} Riego de Torreyoq Kucho`;
+          descargarPNG();
         }
       });
     }
@@ -299,37 +297,16 @@
       renderizarTabla();
     }
 
-    function descargarPDF() {
-  const seccionOriginal = document.getElementById("seccionDescarga");
-  const seccionClonada = seccionOriginal.cloneNode(true);
+    function descargarPNG() {
+      const seccionOriginal = document.getElementById("seccionDescarga");
 
-  // Crear un contenedor para el título dinámico
-  const tituloDinamico = document.createElement("h2");
-  tituloDinamico.style.textAlign = "center";
-  tituloDinamico.style.marginBottom = "20px";
-  tituloDinamico.textContent = `Rol del ${tipoRiego} Riego de Toreocc Cucho`;
-
-  // Añadir el título dinámico al inicio del contenido clonada
-  const contenedor = document.createElement("div");
-  contenedor.appendChild(tituloDinamico);
-  contenedor.appendChild(seccionClonada);
-
-  const opciones = {
-    margin: 0.5,
-    filename: `Rol del ${tipoRiego} Riego.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: {
-      unit: "in",
-      format: "letter",
-      orientation: "landscape",
-    },
-  };
-
-  // Generar el PDF desde el contenedor con título incluido
-  html2pdf().set(opciones).from(contenedor).save();
-}
-
+      html2canvas(seccionOriginal).then((canvas) => {
+        const enlace = document.createElement("a");
+        enlace.download = `Rol del ${tipoRiego} Riego.png`;
+        enlace.href = canvas.toDataURL();
+        enlace.click();
+      });
+    }
 
     window.onload = function () {
       renderizarTabla();
