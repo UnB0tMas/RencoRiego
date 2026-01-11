@@ -2,178 +2,332 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rol del Segundo Riego de Toreocc Cucho</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rol de Riego - Comunidad de Renco</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Flowbite -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+  
   <!-- Librerías externas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <!-- Configuración Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            riego: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    /* Estilo general */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
-      font-family: 'Arial', sans-serif;
-      line-height: 1.6;
-      padding: 20px;
-      background-color: #f9f9f9;
-      color: #333;
+      background-color: #f9fafb;
     }
-    h1 {
-      text-align: center;
-      text-transform: uppercase;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      color: #4CAF50;
+
+    /* Ocultar flechas de inputs numéricos */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
-    label {
-      display: block;
-      font-size: 1em;
-      margin-bottom: 5px;
+    input[type=number] {
+      -moz-appearance: textfield;
     }
-    input[type="datetime-local"] {
-      padding: 10px;
-      width: 100%;
-      max-width: 400px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 0.9em;
+
+    /* Estilos de la celda editable */
+    .celda-editable:focus {
+      background-color: #dcfce7;
+      outline: 2px solid #16a34a;
+      border-radius: 4px;
     }
-    .boton {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 1em;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.3s;
-    }
-    .boton:hover {
-      background-color: #45a049;
-    }
-    #tablaRiego {
-      width: 100%;
+
+    .tabla-documento {
       border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 0.9em;
-      background-color: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      overflow-x: auto;
-      display: block;
+      width: 100%;
+    }
+    
+    /* Estilos generales de celda */
+    .tabla-documento th, .tabla-documento td {
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .hora-celda {
       white-space: nowrap;
     }
-    #tablaRiego th, #tablaRiego td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: center;
+
+    .font-num {
+      font-family: 'Courier New', Courier, monospace;
+      letter-spacing: -0.5px;
     }
-    #tablaRiego th {
-      background-color: #f4f4f4;
-      font-weight: bold;
+
+    /* --- RESPONSIVIDAD DE TABLA (CARDS EN MÓVIL) --- */
+    @media screen and (max-width: 640px) {
+      /* Forzar estructura de bloque para tabla en móvil */
+      .tabla-documento, .tabla-documento thead, .tabla-documento tbody, .tabla-documento th, .tabla-documento td, .tabla-documento tr {
+        display: block;
+      }
+      
+      /* Ocultar cabecera estándar */
+      .tabla-documento thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      /* Estilo de fila como tarjeta */
+      .tabla-documento tr {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        overflow: hidden; /* Para respetar border-radius */
+      }
+
+      .tabla-documento tr:hover {
+        background-color: #fff; /* Reset hover en móvil */
+        transform: translateY(-2px);
+        transition: transform 0.2s ease;
+      }
+
+      /* Estilo de celda en tarjeta */
+      .tabla-documento td {
+        border: none;
+        border-bottom: 1px solid #f3f4f6;
+        position: relative;
+        padding-left: 45%; /* Espacio para la etiqueta */
+        text-align: right; /* Alinear contenido a la derecha */
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: auto;
+        min-height: 3rem;
+      }
+
+      .tabla-documento td:last-child {
+        border-bottom: none;
+      }
+
+      /* La etiqueta (pseudo-elemento) */
+      .tabla-documento td::before {
+        content: attr(data-label);
+        position: absolute;
+        top: 50%;
+        left: 0.75rem;
+        transform: translateY(-50%);
+        width: 40%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: 700;
+        color: #14532d; /* riego-900 */
+        text-align: left;
+        font-size: 0.875rem;
+      }
+
+      /* Ajustes específicos para inputs en móvil */
+      .tabla-documento td input {
+        text-align: right !important;
+        width: 80px !important;
+      }
     }
-    .celda-editable {
-      width: 100%;
-      border: none;
-      background-color: transparent;
-      text-align: center;
-      font-size: 1em;
-      color: #333;
+    /* --- FIN RESPONSIVIDAD --- */
+
+
+    /* Mejora visibilidad botones SweetAlert2 */
+    .swal2-popup {
+      border-radius: 1rem !important;
+      padding: 1.5rem !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+      font-family: 'Inter', sans-serif !important;
     }
-    .celda-editable:focus {
-      outline: none;
-      background-color: #e8f5e9;
-      border-radius: 3px;
+    .swal2-title {
+      font-size: 1.5rem !important;
+      color: #14532d !important;
+      margin-bottom: 1rem !important;
     }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    .swal2-html-container {
+      color: #374151 !important;
+      font-size: 1rem !important;
     }
-    @media (min-width: 769px) {
-      #tablaRiego th:nth-child(2), #tablaRiego td:nth-child(2) {
-        min-width: 30px;
-      }
-      #tablaRiego th:nth-child(3), #tablaRiego td:nth-child(3) {
-        min-width: 150px;
-      }
-      #tablaRiego th:nth-child(4), #tablaRiego td:nth-child(4) {
-        min-width: 250px;
-      }
+    .swal2-confirm, .swal2-cancel {
+      padding: 0.75rem 2rem !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      border-radius: 0.5rem !important;
+      transition: all 0.2s !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+      min-width: 120px !important;
     }
-    @media (max-width: 768px) {
-      #tablaRiego th:nth-child(2), #tablaRiego td:nth-child(2) {
-        min-width: 20px;
-      }
-      #tablaRiego th:nth-child(3), #tablaRiego td:nth-child(3) {
-        min-width: 120px;
-      }
-      #tablaRiego th:nth-child(4), #tablaRiego td:nth-child(4) {
-        min-width: 200px;
-      }
+    .swal2-confirm {
+      background-color: #22c55e !important;
+      border: 1px solid #16a34a !important;
     }
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.2em;
-      }
-      .boton {
-        padding: 10px;
-      }
-      input[type="datetime-local"] {
-        padding: 8px;
-        font-size: 0.85em;
-      }
-      #tablaRiego {
-        font-size: 0.75em;
-      }
-      th, td {
-        padding: 8px;
-      }
+    .swal2-confirm:hover { background-color: #16a34a !important; }
+    .swal2-cancel {
+      background-color: #f3f4f6 !important;
+      color: #374151 !important;
+      border: 1px solid #d1d5db !important;
     }
+    .swal2-cancel:hover { background-color: #e5e7eb !important; }
   </style>
 </head>
-<body>
+<body class="text-gray-800 font-sans antialiased min-h-screen flex flex-col bg-gray-50">
 
-  <div class="container">
-    <h1 id="tituloRiego">Rol de Riego de Torreyoq Kucho</h1>
-
-    <div>
-      <label for="horaInicio">Hora y día de inicio del riego:</label>
-      <input type="datetime-local" id="horaInicio" />
-      <button class="boton" onclick="establecerInicioRiego()">Establecer inicio</button>
+  <!-- Navbar -->
+  <nav class="bg-riego-700 shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="bg-white p-2 rounded-full text-riego-700 shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 0110 10c0 2.34-.81 4.49-2.16 6.18l-1.42-1.42A8 8 0 104 12H2a10 10 0 0110-10zm0 4v6l5 3-1 1.73L13 13.41V6h-1z"/>
+            </svg>
+          </div>
+          <span class="text-white text-lg font-bold tracking-wide">Sistema de Regantes - Renco</span>
+        </div>
+      </div>
     </div>
+  </nav>
 
-    <div id="seccionDescarga">
-      <div style="overflow-x: auto;">
-        <table id="tablaRiego">
-          <thead>
-            <tr>
-              <th>NOMBRE</th>
-              <th>HORAS</th>
-              <th>HORA Y DÍA DE RIEGO (INICIO)</th>
-              <th>HORA Y DÍA DE RIEGO (FIN)</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+  <!-- Contenido Principal -->
+  <main class="flex-grow container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+
+    <!-- Panel de Control -->
+    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden mb-8 border border-riego-100">
+      <div class="px-5 py-5 sm:px-6 border-b border-riego-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-riego-50/50">
+        <div>
+          <h2 class="text-2xl font-bold text-riego-900">Generar Cronograma</h2>
+          <p class="text-sm text-riego-700 mt-1">Turnos de <strong>Torreyoq Kucho</strong></p>
+        </div>
+        <div class="text-xs font-bold bg-riego-100 text-riego-800 px-4 py-2 rounded-full border border-riego-200 shadow-sm whitespace-nowrap">
+          ℹ️ Comunidad: Renco
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-6 bg-white">
+        <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+          <div class="w-full sm:w-5/12 lg:w-1/3">
+            <label for="horaInicio" class="block mb-2 text-sm font-bold text-riego-800">Fecha y Hora de Inicio</label>
+            <input type="datetime-local" id="horaInicio" 
+                   class="bg-white border border-riego-200 text-gray-900 text-sm rounded-lg focus:ring-riego-500 focus:border-riego-500 block w-full p-2.5 shadow-sm transition-all"/>
+          </div>
+          <button onclick="establecerInicioRiego()" 
+                  class="w-full sm:w-auto px-6 py-3 bg-riego-600 hover:bg-riego-700 text-white font-bold rounded-lg text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Calcular Turnos
+          </button>
+        </div>
       </div>
     </div>
 
-    <button class="boton" onclick="mostrarModalDescarga()">Descargar Imagen (PNG)</button>
-  </div>
+    <!-- Área de Captura -->
+    <div class="mb-10">
+      <div id="area-captura" class="bg-white w-full shadow-2xl border border-riego-200 rounded-2xl overflow-hidden mx-auto max-w-full lg:max-w-5xl">
+        <!-- Encabezado -->
+        <div class="border-b-4 border-riego-700 p-6 sm:p-8 text-center bg-gradient-to-b from-white to-riego-50">
+          <div class="flex justify-center mb-4">
+            <div class="h-16 w-16 bg-riego-100 rounded-full flex items-center justify-center text-riego-700 shadow-lg">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M12 4v7m-6 4h12" />
+              </svg>
+            </div>
+          </div>
 
+          <h1 id="tituloRiego" class="font-serif text-3xl font-bold text-riego-900 uppercase tracking-wider mb-2">Rol de Riego</h1>
+          <p class="text-riego-800 text-sm font-bold uppercase mb-1">Comunidad de Renco</p>
+          <span class="text-riego-700 text-xs font-bold uppercase bg-riego-100 px-4 py-1.5 rounded-full border border-riego-200 inline-block shadow-sm">
+            Sistema: Torreyoq Kucho
+          </span>
+
+          <div class="mt-4 text-xs text-gray-500 font-mono" id="fechaGeneracion">
+            Emitido: --
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto p-2 sm:p-0">
+          <table class="tabla-documento min-w-full text-sm text-left divide-y divide-riego-200">
+            <thead>
+              <tr class="bg-riego-100 text-riego-900 uppercase text-xs font-bold tracking-wider">
+                <th class="p-3 sm:p-4 text-center border-r border-riego-200">Usuario / Beneficiario</th>
+                <th class="p-3 sm:p-4 text-center border-r border-riego-200">Horas</th>
+                <th class="p-3 sm:p-4 text-center border-r border-riego-200">Inicio</th>
+                <th class="p-3 sm:p-4 text-center">Fin</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpoTabla" class="divide-y divide-riego-100 bg-white">
+              <!-- JS render -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-5 sm:p-6 bg-riego-50 border-t-2 border-riego-200 flex flex-col sm:flex-row justify-between items-center text-xs text-riego-700 gap-4">
+          <div class="text-center sm:text-left">
+            <span class="font-bold text-riego-900 block">Total Usuarios</span>
+            <span id="totalUsuarios" class="text-2xl font-mono text-riego-900 font-bold">0</span>
+          </div>
+          <div class="text-center sm:text-right">
+            <p class="italic mb-1 text-riego-600">"El agua es vida, úsala con responsabilidad"</p>
+            <p class="font-bold text-riego-500 text-[10px]">COMUNIDAD DE RENCO - TORREYOQ KUCHO</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Descarga -->
+    <div class="flex justify-center pb-12">
+      <button onclick="iniciarDescarga()" 
+              class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-riego-800 rounded-full text-base hover:bg-riego-900 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-riego-700">
+        <svg class="w-6 h-6 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Descargar Rol (PNG)
+      </button>
+    </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-riego-100 mt-auto py-6 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm text-riego-600">
+      © 2023 - 2026 Junta de Usuarios Renco. Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+  
   <script>
+    // --- DATOS ---
+    // Datos base que nunca cambian
     const datosBase = [
       ["Marleni", 8],
       ["Lalo", 12],
@@ -190,125 +344,247 @@
     ];
 
     let horaInicioGlobal = null;
-    let tipoRiego = "Segundo";
 
-    function cargarDatos() {
-      return datosBase;
-    }
-
-    function formatearFechaConDia(fecha) {
-      const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-      const opcionesHora = { hour: "2-digit", minute: "2-digit", hour12: true };
-      const opcionesFecha = { day: "2-digit", month: "2-digit", year: "numeric" };
+    // UTILIDADES
+    function formatearFechaDocumento(fecha) {
+      if (!fecha) return "<span class='text-gray-400 italic'>Pendiente...</span>";
+      
+      const dias = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+      const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+      
       const diaSemana = dias[fecha.getDay()];
-      const hora = fecha.toLocaleTimeString("es-PE", opcionesHora);
-      const fechaFormateada = fecha.toLocaleDateString("es-PE", opcionesFecha);
-      return `${hora} ${diaSemana} ${fechaFormateada}`;
+      const dia = fecha.getDate();
+      const mes = meses[fecha.getMonth()];
+      const anio = fecha.getFullYear();
+      
+      let horas = fecha.getHours();
+      const minutos = fecha.getMinutes();
+      const ampm = horas >= 12 ? 'PM' : 'AM';
+      
+      horas = horas % 12 || 12;
+      const minutosStr = minutos.toString().padStart(2, '0');
+
+      let badgeHTML = "";
+      if (horas === 12 && minutos === 0) {
+        const textoNota = ampm === 'AM' ? 'Madrugada' : 'Mediodía';
+        const colorClass = ampm === 'AM' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800';
+        badgeHTML = `<span class="ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold ${colorClass}">${textoNota}</span>`;
+      }
+
+      return `
+        <div class="flex flex-col items-center leading-tight">
+          <span class="text-[10px] sm:text-xs text-gray-600 font-bold uppercase">${diaSemana}, ${dia} ${mes} ${anio}</span>
+          <div class="font-bold mt-1 flex items-center hora-celda">
+            <span class="font-num text-base sm:text-lg">${horas}:${minutosStr}</span>
+            <span class="text-xs ml-1.5">${ampm}</span>
+            ${badgeHTML}
+          </div>
+        </div>
+      `;
     }
 
+    // RENDERIZADO TABLA
     function renderizarTabla() {
-      const tbody = document.querySelector("#tablaRiego tbody");
+      const tbody = document.getElementById("cuerpoTabla");
+      const totalSpan = document.getElementById("totalUsuarios");
+      const fechaGen = document.getElementById("fechaGeneracion");
+
       tbody.innerHTML = "";
-      const datos = cargarDatos();
+      const hoy = new Date();
+      fechaGen.textContent = `Emitido el: ${hoy.toLocaleDateString('es-PE')} ${hoy.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'})}`;
 
-      let inicioActual = horaInicioGlobal;
+      let horaAcumulada = horaInicioGlobal ? new Date(horaInicioGlobal) : null;
+      let count = 0;
 
-      datos.forEach((fila) => {
+      // Iteramos directamente sobre datosBase para asegurar que siempre usamos los valores originales
+      datosBase.forEach((fila, index) => {
         const tr = document.createElement("tr");
+        tr.className = "hover:bg-riego-50 border-b border-riego-100 transition-colors";
 
+        // Nombre (de datosBase, no editable)
         const tdNombre = document.createElement("td");
-        tdNombre.textContent = fila[0];
+        tdNombre.textContent = datosBase[index][0];
+        tdNombre.className = "p-3 text-center border-r border-riego-100 font-semibold text-sm break-words";
+        // Corrección: Se eliminó la línea tdNombe duplicada con error tipográfico
+        tdNombre.dataset.label = "Usuario";
         tr.appendChild(tdNombre);
 
+        // Horas (Visualmente editable pero no guarda en memoria)
         const tdHoras = document.createElement("td");
-        const inputHoras = document.createElement("input");
-        inputHoras.type = "number";
-        inputHoras.className = "celda-editable";
-        inputHoras.value = fila[1];
-        inputHoras.min = 0;
-        inputHoras.addEventListener("change", (e) => {
-          fila[1] = parseInt(e.target.value, 10) || 0;
-          actualizarTiempos();
-        });
-        tdHoras.appendChild(inputHoras);
+        tdHoras.className = "p-2 text-center border-r border-riego-100 bg-white";
+        tdHoras.dataset.label = "Horas Asignadas";
+        
+        const input = document.createElement("input");
+        input.type = "number";
+        input.value = fila[1];
+        input.min = 0;
+        input.className = "celda-editable w-16 sm:w-20 text-center font-mono font-bold text-riego-900 bg-transparent border border-transparent rounded p-1.5 text-base mx-auto block focus:bg-riego-100";
+        
+        // IMPORTANTE: Se elimina el addEventListener que guardaba cambios en memoria.
+        // Los cambios visuales en el input se perderán al volver a renderizar.
+        
+        tdHoras.appendChild(input);
         tr.appendChild(tdHoras);
 
+        // Cálculos
+        const inicio = horaAcumulada ? new Date(horaAcumulada) : null;
+        const fin = inicio ? new Date(inicio.getTime() + (fila[1] * 3600 * 1000)) : null;
+
+        // Celda Inicio
         const tdInicio = document.createElement("td");
-        const inputInicio = document.createElement("input");
-        inputInicio.type = "text";
-        inputInicio.className = "celda-editable";
-        inputInicio.value = fila[1] > 0 && inicioActual ? formatearFechaConDia(inicioActual) : "-- ---- ---";
-        inputInicio.readOnly = true;
-        tdInicio.appendChild(inputInicio);
+        tdInicio.className = "p-2 text-center border-r border-riego-100 bg-riego-50/30";
+        tdInicio.dataset.label = "Hora Inicio";
+        tdInicio.innerHTML = formatearFechaDocumento(inicio);
         tr.appendChild(tdInicio);
 
+        // Celda Fin
         const tdFin = document.createElement("td");
-        const inputFin = document.createElement("input");
-        inputFin.type = "text";
-        inputFin.className = "celda-editable";
-        inputFin.value = fila[1] > 0 && inicioActual ? formatearFechaConDia(new Date(inicioActual.getTime() + fila[1] * 60 * 60 * 1000)) : "-- ---- ---";
-        inputFin.readOnly = true;
-        tdFin.appendChild(inputFin);
+        tdFin.className = "p-2 text-center bg-riego-50/30";
+        tdFin.dataset.label = "Hora Fin";
+        tdFin.innerHTML = formatearFechaDocumento(fin);
         tr.appendChild(tdFin);
 
         tbody.appendChild(tr);
 
-        if (fila[1] > 0 && inicioActual) {
-          inicioActual = new Date(inicioActual.getTime() + fila[1] * 60 * 60 * 1000);
+        // Avance del tiempo para la siguiente fila
+        if (fila[1] > 0 && horaAcumulada) {
+          horaAcumulada = fin;
+          count++;
+        } else if (fila[1] > 0) {
+          count++;
         }
       });
+
+      totalSpan.textContent = count || datosBase.length;
     }
 
     function establecerInicioRiego() {
-      const inputInicio = document.getElementById("horaInicio");
-      const horaInicio = new Date(inputInicio.value);
+      const valor = document.getElementById("horaInicio").value;
+      if (!valor) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Dato requerido',
+          text: 'Por favor seleccione fecha y hora de inicio',
+          confirmButtonColor: '#22c55e'
+        });
+        return;
+      }
+      horaInicioGlobal = new Date(valor);
+      // Al renderizar, se usarán siempre los datosBase originales, ignorando cualquier edición manual previa
+      renderizarTabla();
+      
+      // Scroll suave hacia la tabla
+      document.getElementById('area-captura').scrollIntoView({ behavior: 'smooth' });
+    }
 
-      if (isNaN(horaInicio.getTime())) {
-        alert("Por favor, ingresa una fecha y hora válida.");
+    function iniciarDescarga() {
+      if (!horaInicioGlobal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Sin datos',
+          text: 'Primero genere el cronograma seleccionando fecha y hora y pulsando "Calcular Turnos"',
+          confirmButtonColor: '#dc2626'
+        });
         return;
       }
 
-      horaInicioGlobal = horaInicio;
-      renderizarTabla();
-    }
-
-    function mostrarModalDescarga() {
       Swal.fire({
-        title: 'Selecciona el tipo de riego',
+        title: 'Seleccionar tipo de riego',
         input: 'select',
         inputOptions: {
           'Primer': 'Primer Riego',
           'Segundo': 'Segundo Riego'
         },
-        inputPlaceholder: 'Selecciona una opción',
+        inputPlaceholder: 'Seleccione...',
         showCancelButton: true,
-        confirmButtonText: 'Confirmar',
+        confirmButtonText: 'Descargar PNG',
         cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#22c55e',
+        cancelButtonColor: '#f3f4f6',
+        reverseButtons: true,
+        backdrop: 'rgba(0,0,0,0.65)',
+        customClass: {
+          confirmButton: 'swal2-confirm',
+          cancelButton: 'swal2-cancel'
+        }
       }).then((result) => {
         if (result.isConfirmed && result.value) {
-          tipoRiego = result.value;
-          document.getElementById("tituloRiego").textContent = `Rol del ${tipoRiego} Riego de Torreyoq Kucho`;
-          descargarPNG();
+          const tipo = result.value;
+          const tituloOriginal = document.getElementById("tituloRiego").textContent;
+          
+          document.getElementById("tituloRiego").textContent = `Rol del ${tipo} Riego`;
+
+          const area = document.getElementById("area-captura");
+          area.classList.add("ring-4", "ring-riego-400", "ring-opacity-60");
+
+          descargarImagen().then(() => {
+            area.classList.remove("ring-4", "ring-riego-400", "ring-opacity-60");
+            document.getElementById("tituloRiego").textContent = tituloOriginal;
+          });
         }
       });
     }
 
-    function actualizarTiempos() {
-      renderizarTabla();
-    }
+    function descargarImagen() {
+      const elemento = document.getElementById("area-captura");
 
-    function descargarPNG() {
-      const seccionOriginal = document.getElementById("seccionDescarga");
+      const inputs = elemento.querySelectorAll('input[type="number"]');
+      const replacements = [];
+      
+      // Convertir inputs a spans estáticos para la foto
+      inputs.forEach(input => {
+        const span = document.createElement('span');
+        span.textContent = input.value;
+        span.className = 'inline-block w-16 sm:w-20 text-center font-mono font-bold text-riego-900 p-1.5 text-base';
+        input.parentNode.replaceChild(span, input);
+        replacements.push({input, span});
+      });
 
-      html2canvas(seccionOriginal).then((canvas) => {
-        const enlace = document.createElement("a");
-        enlace.download = `Rol del ${tipoRiego} Riego.png`;
-        enlace.href = canvas.toDataURL();
-        enlace.click();
+      Swal.fire({
+        title: 'Generando documento...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      return html2canvas(elemento, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        letterRendering: true,
+        windowWidth: elemento.scrollWidth,
+        windowHeight: elemento.scrollHeight
+      }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = `Rol_Riego_Renco_${new Date().getTime()}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+
+        Swal.fire({
+          icon: 'success',
+          title: '¡Descargado!',
+          text: 'Imagen generada correctamente',
+          timer: 1800,
+          showConfirmButton: false
+        });
+      }).catch(err => {
+        console.error(err);
+        Swal.fire('Error', 'No se pudo generar la imagen', 'error');
+      }).finally(() => {
+        // Restaurar inputs
+        replacements.forEach(({input, span}) => {
+          span.parentNode.replaceChild(input, span);
+        });
       });
     }
 
-    window.onload = function () {
+    // Inicialización
+    window.onload = () => {
+      const ahora = new Date();
+      ahora.setMinutes(ahora.getMinutes() - ahora.getTimezoneOffset());
+      document.getElementById('horaInicio').value = ahora.toISOString().slice(0,16);
+      
+      // Carga inicial de la tabla con los datos por defecto
       renderizarTabla();
     };
   </script>
