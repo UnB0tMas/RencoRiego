@@ -108,11 +108,11 @@
         margin-bottom: 1rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         background-color: white;
-        overflow: hidden; /* Para respetar border-radius */
+        overflow: hidden;
       }
 
       .tabla-documento tr:hover {
-        background-color: #fff; /* Reset hover en móvil */
+        background-color: #fff;
         transform: translateY(-2px);
         transition: transform 0.2s ease;
       }
@@ -122,8 +122,8 @@
         border: none;
         border-bottom: 1px solid #f3f4f6;
         position: relative;
-        padding-left: 45%; /* Espacio para la etiqueta */
-        text-align: right; /* Alinear contenido a la derecha */
+        padding-left: 45%;
+        text-align: right;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -159,6 +159,68 @@
     }
     /* --- FIN RESPONSIVIDAD --- */
 
+    /* --- ESTILOS PARA FORZAR DISEÑO ESCRITORIO EN LA DESCARGA --- */
+    /* Esta clase se añade temporalmente al generar la imagen */
+    .force-desktop-layout .tabla-documento,
+    .force-desktop-layout .tabla-documento thead,
+    .force-desktop-layout .tabla-documento tbody,
+    .force-desktop-layout .tabla-documento tr {
+      display: table !important;
+      width: 100% !important;
+    }
+    
+    .force-desktop-layout .tabla-documento thead {
+      display: table-header-group !important;
+    }
+    
+    .force-desktop-layout .tabla-documento tbody {
+      display: table-row-group !important;
+    }
+
+    .force-desktop-layout .tabla-documento th, 
+    .force-desktop-layout .tabla-documento td {
+      display: table-cell !important;
+      position: static !important; /* Elimina el position relativo de las cards */
+      padding: 1rem !important; /* Un poco más de relleno para la imagen */
+      width: auto !important;
+      height: auto !important;
+      border-bottom: 1px solid #e5e7eb !important;
+      border-right: 1px solid #e5e7eb !important;
+      text-align: center !important;
+      justify-content: center !important;
+    }
+
+    .force-desktop-layout .tabla-documento th {
+      background-color: #dcfce7; /* riego-100 */
+      color: #14532d;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Ocultar etiquetas de móvil y bordes extras */
+    .force-desktop-layout .tabla-documento td::before {
+      display: none !important;
+    }
+    
+    /* Eliminar estilos de tarjeta (bordes, sombras, margenes) en filas */
+    .force-desktop-layout .tabla-documento tr {
+      border: none !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      background-color: transparent !important;
+      display: table-row !important;
+    }
+    
+    /* Asegurar que el input se vea centrado y limpio en la descarga */
+    .force-desktop-layout .tabla-documento td input {
+      text-align: center !important;
+      width: 100% !important;
+      display: inline-block !important;
+    }
+    /* --- FIN DE ESTILOS DE DESCARGA --- */
 
     /* Mejora visibilidad botones SweetAlert2 */
     .swal2-popup {
@@ -251,7 +313,8 @@
 
     <!-- Área de Captura -->
     <div class="mb-10">
-      <div id="area-captura" class="bg-white w-full shadow-2xl border border-riego-200 rounded-2xl overflow-hidden mx-auto max-w-full lg:max-w-5xl">
+      <!-- Nota: Quitamos max-w-5xl para permitir expansión en modo captura, el padding del padre lo contiene -->
+      <div id="area-captura" class="bg-white w-full shadow-2xl border border-riego-200 rounded-2xl overflow-hidden mx-auto transition-all duration-300">
         <!-- Encabezado -->
         <div class="border-b-4 border-riego-700 p-6 sm:p-8 text-center bg-gradient-to-b from-white to-riego-50">
           <div class="flex justify-center mb-4">
@@ -327,7 +390,6 @@
   
   <script>
     // --- DATOS ---
-    // Datos base que nunca cambian
     const datosBase = [
       ["Marleni", 8],
       ["Lalo", 12],
@@ -396,20 +458,18 @@
       let horaAcumulada = horaInicioGlobal ? new Date(horaInicioGlobal) : null;
       let count = 0;
 
-      // Iteramos directamente sobre datosBase para asegurar que siempre usamos los valores originales
       datosBase.forEach((fila, index) => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-riego-50 border-b border-riego-100 transition-colors";
 
-        // Nombre (de datosBase, no editable)
+        // Nombre
         const tdNombre = document.createElement("td");
         tdNombre.textContent = datosBase[index][0];
         tdNombre.className = "p-3 text-center border-r border-riego-100 font-semibold text-sm break-words";
-        // Corrección: Se eliminó la línea tdNombe duplicada con error tipográfico
         tdNombre.dataset.label = "Usuario";
         tr.appendChild(tdNombre);
 
-        // Horas (Visualmente editable pero no guarda en memoria)
+        // Horas
         const tdHoras = document.createElement("td");
         tdHoras.className = "p-2 text-center border-r border-riego-100 bg-white";
         tdHoras.dataset.label = "Horas Asignadas";
@@ -419,9 +479,6 @@
         input.value = fila[1];
         input.min = 0;
         input.className = "celda-editable w-16 sm:w-20 text-center font-mono font-bold text-riego-900 bg-transparent border border-transparent rounded p-1.5 text-base mx-auto block focus:bg-riego-100";
-        
-        // IMPORTANTE: Se elimina el addEventListener que guardaba cambios en memoria.
-        // Los cambios visuales en el input se perderán al volver a renderizar.
         
         tdHoras.appendChild(input);
         tr.appendChild(tdHoras);
@@ -446,7 +503,6 @@
 
         tbody.appendChild(tr);
 
-        // Avance del tiempo para la siguiente fila
         if (fila[1] > 0 && horaAcumulada) {
           horaAcumulada = fin;
           count++;
@@ -470,10 +526,7 @@
         return;
       }
       horaInicioGlobal = new Date(valor);
-      // Al renderizar, se usarán siempre los datosBase originales, ignorando cualquier edición manual previa
       renderizarTabla();
-      
-      // Scroll suave hacia la tabla
       document.getElementById('area-captura').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -510,28 +563,23 @@
       }).then((result) => {
         if (result.isConfirmed && result.value) {
           const tipo = result.value;
-          const tituloOriginal = document.getElementById("tituloRiego").textContent;
-          
-          document.getElementById("tituloRiego").textContent = `Rol del ${tipo} Riego`;
-
-          const area = document.getElementById("area-captura");
-          area.classList.add("ring-4", "ring-riego-400", "ring-opacity-60");
-
-          descargarImagen().then(() => {
-            area.classList.remove("ring-4", "ring-riego-400", "ring-opacity-60");
-            document.getElementById("tituloRiego").textContent = tituloOriginal;
-          });
+          descargarImagen(tipo);
         }
       });
     }
 
-    function descargarImagen() {
-      const elemento = document.getElementById("area-captura");
+    function descargarImagen(tipo) {
+      const area = document.getElementById("area-captura");
+      const tituloOriginal = document.getElementById("tituloRiego").textContent;
+      
+      // 1. Preparar el DOM para la captura
+      // Cambiar título
+      document.getElementById("tituloRiego").textContent = `Rol del ${tipo} Riego`;
 
-      const inputs = elemento.querySelectorAll('input[type="number"]');
+      // Convertir inputs a spans estáticos para que se vean bien en la foto
+      const inputs = area.querySelectorAll('input[type="number"]');
       const replacements = [];
       
-      // Convertir inputs a spans estáticos para la foto
       inputs.forEach(input => {
         const span = document.createElement('span');
         span.textContent = input.value;
@@ -540,23 +588,38 @@
         replacements.push({input, span});
       });
 
+      // 2. FORZAR DISEÑO ESCRITORIO (La solución solicitada)
+      // Guardamos el estilo original del ancho para restaurarlo después
+      const originalWidth = area.style.width;
+      const originalMaxWidth = area.style.maxWidth;
+
+      // Añadimos la clase que ignora las media queries y fuerza layout de tabla
+      area.classList.add("force-desktop-layout");
+      
+      // Establecemos un ancho fijo profesional (tipo A4 landscape ~ 1100px o 1200px)
+      // Esto asegura que la imagen tenga buena resolución y el diseño de tabla se mantenga.
+      area.style.width = "1200px"; 
+      area.style.maxWidth = "none";
+
       Swal.fire({
         title: 'Generando documento...',
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
       });
 
-      return html2canvas(elemento, {
-        scale: 3,
+      // 3. Capturar con html2canvas
+      // Importante: usamos el width explícito para que el canvas se genere con ese tamaño
+      html2canvas(area, {
+        scale: 2, // Alta calidad (Retina)
         useCORS: true,
         backgroundColor: "#ffffff",
         logging: false,
-        letterRendering: true,
-        windowWidth: elemento.scrollWidth,
-        windowHeight: elemento.scrollHeight
+        windowWidth: 1200, // Engañar a la librería para que piense que estamos en pantalla ancha
+        width: 1200 
       }).then(canvas => {
+        // Crear enlace de descarga
         const link = document.createElement("a");
-        link.download = `Rol_Riego_Renco_${new Date().getTime()}.png`;
+        link.download = `Rol_Riego_${tipo}_${new Date().getTime()}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
 
@@ -564,17 +627,28 @@
           icon: 'success',
           title: '¡Descargado!',
           text: 'Imagen generada correctamente',
-          timer: 1800,
+          timer: 2000,
           showConfirmButton: false
         });
       }).catch(err => {
         console.error(err);
         Swal.fire('Error', 'No se pudo generar la imagen', 'error');
       }).finally(() => {
+        // 4. RESTAURAR EL DOM (Limpiar cambios)
+        // Quitar clase de escritorio
+        area.classList.remove("force-desktop-layout");
+        
+        // Restaurar anchos
+        area.style.width = originalWidth;
+        area.style.maxWidth = originalMaxWidth;
+        
         // Restaurar inputs
         replacements.forEach(({input, span}) => {
           span.parentNode.replaceChild(input, span);
         });
+
+        // Restaurar título
+        document.getElementById("tituloRiego").textContent = tituloOriginal;
       });
     }
 
@@ -583,8 +657,6 @@
       const ahora = new Date();
       ahora.setMinutes(ahora.getMinutes() - ahora.getTimezoneOffset());
       document.getElementById('horaInicio').value = ahora.toISOString().slice(0,16);
-      
-      // Carga inicial de la tabla con los datos por defecto
       renderizarTabla();
     };
   </script>
