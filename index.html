@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rol de Riego - Comunidad de Renco</title>
 
+  <!-- PWA / Instalación -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="../../Documents/icons/icon-192.png" />
+  <meta name="theme-color" content="#14532d" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Renco Riego" />
+  <meta name="application-name" content="Renco Riego" />
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -55,6 +64,15 @@
         </div>
         <span class="text-white text-base sm:text-lg font-bold tracking-wide truncate">Sistema de Regantes - Renco</span>
       </div>
+
+      <button
+        id="btnInstalarApp"
+        type="button"
+        class="hidden shrink-0 rounded-full border border-white/25 bg-white/10 px-3 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-white hover:text-riego-900 focus:outline-none focus:ring-4 focus:ring-white/35"
+        aria-label="Instalar aplicación Renco Riego"
+      >
+        Instalar app
+      </button>
     </div>
   </div>
 </nav>
@@ -78,16 +96,16 @@
         <div class="w-full sm:w-5/12 lg:w-1/3">
           <label for="horaInicio" class="block mb-2 text-sm font-bold text-riego-800">Fecha y Hora de Inicio</label>
           <input
-                  type="datetime-local"
-                  id="horaInicio"
-                  class="bg-white border border-riego-200 text-gray-900 text-sm rounded-lg focus:ring-riego-500 focus:border-riego-500 block w-full p-2.5 shadow-sm transition-all"
+            type="datetime-local"
+            id="horaInicio"
+            class="bg-white border border-riego-200 text-gray-900 text-sm rounded-lg focus:ring-riego-500 focus:border-riego-500 block w-full p-2.5 shadow-sm transition-all"
           />
         </div>
 
         <button
-                id="btnCalcular"
-                type="button"
-                class="w-full sm:w-auto px-6 py-3 bg-riego-600 hover:bg-riego-700 text-white font-bold rounded-lg text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          id="btnCalcular"
+          type="button"
+          class="w-full sm:w-auto px-6 py-3 bg-riego-600 hover:bg-riego-700 text-white font-bold rounded-lg text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -174,9 +192,9 @@
   <!-- Botón Descarga -->
   <div class="flex justify-center pb-12">
     <button
-            id="btnDescargar"
-            type="button"
-            class="group relative inline-flex items-center justify-center px-6 sm:px-8 py-4 font-bold text-white bg-riego-800 rounded-full text-sm sm:text-base hover:bg-riego-900 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-riego-700"
+      id="btnDescargar"
+      type="button"
+      class="group relative inline-flex items-center justify-center px-6 sm:px-8 py-4 font-bold text-white bg-riego-800 rounded-full text-sm sm:text-base hover:bg-riego-900 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-riego-700"
     >
       <svg class="w-6 h-6 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
